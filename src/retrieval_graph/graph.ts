@@ -20,11 +20,11 @@ async function checkQueryType(
 }> {
   const schema = z.object({
     route: z.enum(['retrieve', 'direct']),
-    directAnswer: z.string().optional(),
+    directAnswer: z.string().nullable().optional(), // Fixed: Added .nullable()
   });
 
   const configuration = ensureAgentConfiguration(config);
-  const model = await loadChatModel(configuration.queryModel);
+  const model = await loadChatModel(configuration.queryModel); // Uses shared/utils.ts
 
   const routingPrompt = ROUTER_SYSTEM_PROMPT;
 
@@ -36,9 +36,11 @@ async function checkQueryType(
     .withStructuredOutput(schema)
     .invoke(formattedPrompt.toString());
 
-  const route = response.route;
+  if (!response.route) {
+    throw new Error('Route not provided in model response');
+  }
 
-  return { route };
+  return { route: response.route }; // Only return route, directAnswer is optional
 }
 
 async function answerQueryDirectly(
@@ -74,7 +76,7 @@ async function retrieveDocuments(
   state: typeof AgentStateAnnotation.State,
   config: RunnableConfig,
 ): Promise<typeof AgentStateAnnotation.Update> {
-  const retriever = await makeRetriever(config);
+  const retriever = await makeRetriever(config); // Uses shared/retrieval.ts
   const response = await retriever.invoke(state.query);
 
   return { documents: response };

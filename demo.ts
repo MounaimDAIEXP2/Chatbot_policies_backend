@@ -14,7 +14,7 @@ const assistant_id = 'retrieval_graph';
 async function runDemo() {
   // Initialize the LangGraph client
   const client = new Client({
-    apiUrl: process.env.LANGGRAPH_API_URL || 'http://localhost:2024',
+    apiUrl: process.env.LANGGRAPH_API_URL || 'http://localhost:2025',
   });
 
   // Create a new thread for this conversation
