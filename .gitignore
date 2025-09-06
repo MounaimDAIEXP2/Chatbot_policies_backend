@@ -3,6 +3,5 @@
 .langgraph_api/
 node_modules/
 dist/
-.env
 .turbo/
 test_docs/
